@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Objectives Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f2f5; }
+        .dashboard { max-width: 800px; margin: 0 auto; }
+        .card { background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; overflow: hidden; }
+        .card-header { background-color: #f8f9fa; padding: 15px; font-weight: bold; font-size: 18px; border-bottom: 1px solid #e0e0e0; }
+        .card-content { padding: 15px; }
+        .objective { margin-bottom: 20px; }
+        .objective-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .objective-name { font-weight: 600; }
+        .objective-description { font-size: 14px; color: #666; margin-top: 5px; }
+        .progress-bar { height: 8px; background-color: #e0e0e0; border-radius: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background-color: #4caf50; transition: width 0.3s ease; }
+        .weekly-change { font-size: 14px; margin-top: 5px; }
+        .up { color: #4caf50; }
+        .down { color: #f44336; }
+        .neutral { color: #757575; }
+        .dashboard-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .dashboard-info { background-color: #e8f5e9; border-radius: 4px; padding: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const weeklyMetrics = {
+            weekEnding: "2024-09-15",
+            currentQuarter: "Q3 2024",
+            smallBusinessesServed: { current: 3135, target: 3450, vsLastWeek: 0.35 },
+            mrrGrowth: { current: 3.66, target: 20, vsLastWeek: 3.35 },
+            hrAdviceRevenue: { current: 60918, target: 60000, vsLastWeek: 7.21 },
+            softwareSales: { current: 1747.41, target: 2000, vsLastWeek: 67.51 },
+            softwareLogoChurn: { current: 0.8, target: 1, vsLastWeek: null },
+            hrAdviceOneOffRevenue: { current: 10170.25, target: 4000, vsLastWeek: 45.29 },
+            charlieRecruitSales: { current: 60, target: 70, vsLastWeek: 5.26 },
+        };
+
+        const ObjectiveCard = ({ title, objectives }) => (
+            <div className="card">
+                <div className="card-header">{title}</div>
+                <div className="card-content">
+                    {objectives.map((obj, index) => (
+                        <div key={index} className="objective">
+                            <div className="objective-header">
+                                <span className="objective-name">{obj.name}</span>
+                                <span>{obj.metric.current.toFixed(2)} / {obj.metric.target} {obj.unit}</span>
+                            </div>
+                            {obj.description && (
+                                <div className="objective-description">{obj.description}</div>
+                            )}
+                            <div className="progress-bar">
+                                <div 
+                                    className="progress-bar-fill" 
+                                    style={{width: `${Math.min((obj.metric.current / obj.metric.target) * 100, 100)}%`}}
+                                ></div>
+                            </div>
+                            {obj.metric.vsLastWeek !== null ? (
+                                <div className={`weekly-change ${obj.metric.vsLastWeek > 0 ? 'up' : obj.metric.vsLastWeek < 0 ? 'down' : 'neutral'}`}>
+                                    {obj.metric.vsLastWeek > 0 ? '↑' : obj.metric.vsLastWeek < 0 ? '↓' : '–'} {Math.abs(obj.metric.vsLastWeek).toFixed(2)}% vs last week
+                                </div>
+                            ) : (
+                                <div className="weekly-change neutral">N/A vs last week</div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const CompanyObjectivesDashboard = () => {
+            const objectives = [
+                {
+                    title: "Our Mission: To help small businesses thrive by becoming their first in-house HR expert",
+                    items: [
+                        { 
+                            name: "Company Objective One: Customer Count", 
+                            metric: weeklyMetrics.smallBusinessesServed, 
+                            unit: "customers",
+                            description: "To deliver value to 3450 small businesses by the end of 2024"
+                        },
+                        { 
+                            name: "Company Objective Two: MRR Growth", 
+                            metric: weeklyMetrics.mrrGrowth, 
+                            unit: "%",
+                            description: "To grow our software MRR by 20%"
+                        },
+                    ]
+                },
+                {
+                    title: "CP1: Raise awareness of Charlie & optimise our activation experience",
+                    items: [
+                        { 
+                            name: "HR Advice Revenue", 
+                            metric: weeklyMetrics.hrAdviceRevenue, 
+                            unit: "£",
+                            description: "All revenue from HR Advice Services with a monthly target of £60,000"
+                        },
+                        { 
+                            name: "Software Sales", 
+                            metric: weeklyMetrics.softwareSales, 
+                            unit: "£",
+                            description: "Core Software Sales with a monthly target of £2000"
+                        },
+                    ]
+                },
+                {
+                    title: "CP2 Retention: Retain customers by elevating their Charlie experience",
+                    items: [
+                        { 
+                            name: "Software Logo Churn", 
+                            metric: weeklyMetrics.softwareLogoChurn, 
+                            unit: "%",
+                            description: "Companies that leave Charlie and the percentage of our customer base this makes up with a monthly target of 1%"
+                        },
+                    ]
+                },
+                {
+                    title: "CP3 Upsell: Sell more to customers to enhance the value they get from Charlie",
+                    items: [
+                        { 
+                            name: "HR Advice one-off revenue", 
+                            metric: weeklyMetrics.hrAdviceOneOffRevenue, 
+                            unit: "£",
+                            description: "One-off revenue from HR Advice (upsell and bootcamps etc) with a monthly target of £4000 (this is not separate to HR Advice Revenue and contributes to their overall Monthly Target)"
+                        },
+                        { 
+                            name: "Charlie Recruit Sales", 
+                            metric: weeklyMetrics.charlieRecruitSales, 
+                            unit: "No. Customers",
+                            description: "Companies onboarded onto Charlie Recruit with a target of 70 customers by the end of Q3"
+                        },
+                    ]
+                }
+            ];
+
+            return (
+                <div className="dashboard">
+                    <h1>Company Objectives Dashboard</h1>
+                    <div className="dashboard-header">
+                        <div className="dashboard-info">
+                            Week Ending: {weeklyMetrics.weekEnding}
+                        </div>
+                        <div className="dashboard-info">
+                            Current Quarter: {weeklyMetrics.currentQuarter}
+                        </div>
+                    </div>
+                    {objectives.map((category, index) => (
+                        <ObjectiveCard key={index} title={category.title} objectives={category.items} />
+                    ))}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<CompanyObjectivesDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
